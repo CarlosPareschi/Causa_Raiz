@@ -1,0 +1,13 @@
+# .gitignore
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+# Virtual environments
+.venv/
+# Environment file (contains sensitive data)
+.env
+# Meus comentarios
+Comentarios.txt

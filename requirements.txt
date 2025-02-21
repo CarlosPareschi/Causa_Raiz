@@ -1,0 +1,7 @@
+streamlit
+openai
+nltk
+scikit-learn
+python-dotenv
+tiktoken
+numpy
