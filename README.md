@@ -1,4 +1,4 @@
-Road Accident Root Cause Analysis (mABC)
+Road Accident Root Cause Analysis
 ==========================================
 
 Overview:
