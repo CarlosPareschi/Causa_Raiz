@@ -57,6 +57,7 @@ def agent3_classify(text: str) -> dict:
         "Lack of attention to pedestrians and cyclists",
         "Driver health issues",
         "Pedestrian inattention",
+        "Visibility or inadequate attention to the obstacle on the road",
         "Others"
     ]
     

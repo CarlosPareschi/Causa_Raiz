@@ -22,7 +22,7 @@ def translate_to_portuguese(text: str) -> str:
         "Driving under the influence of alcohol or drugs": "Condução sob efeito de álcool ou drogas",
         "Disregard for traffic rules": "Desrespeito às regras de trânsito",
         "Fatigue and drowsiness": "Fadiga e sonolência",
-        "Lack of vehicle maintenance": "Falta de manutenção do veículo",
+        "Lack of vehicle maintenance": "Falta de manutenção de veículo",
         "Adverse weather conditions": "Condições climáticas adversas",
         "Inadequate infrastructure": "Infraestrutura inadequada",
         "Aggressive behavior": "Comportamento agressivo",
