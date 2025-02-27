@@ -35,6 +35,7 @@ def translate_to_portuguese(text: str) -> str:
         "Lack of attention to pedestrians and cyclists": "Falta de atenção a pedestres e ciclistas",
         "Driver health issues": "Problemas de saúde do motorista",
         "Pedestrian inattention": "Falta de atenção do pedestre",
+        "Visibility or inadequate attention to the obstacle on the road": "Visibilidade ou atenção inadequada ao obstáculo na estrada",
         "Others": "Outros"
     }
     return translation_map.get(text, text)

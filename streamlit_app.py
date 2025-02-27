@@ -54,10 +54,21 @@ if st.button("Process"):
     st.subheader("Full Model Reasoning:")
     st.text_area("Reasoning Output:", reasoning_text, height=300)
     
+    # Exibe os resultados extraídos sem o Selected Cause em inglês.
     st.subheader("Extracted Results:")
-    st.write(f"Selected Cause (English): {selected_cause}")
     st.write(f"Translated Cause (Portuguese): {translated_cause}")
     st.write(f"Confidence Score: {score}")
+
+    # Verifica se a causa traduzida é "Outros" e cria uma aba condicional para exibir sugestões adicionais.
+    if translated_cause.lower() == "outros":
+        tab1, tab2 = st.tabs(["Causa Provável", "Sugestão Adicional"])
+    
+        with tab1:
+            st.write("Causa Probável: Outros")
+        with tab2:
+            # Aqui você pode colocar o que o modelo ou sua lógica adicional sugere como causa
+            st.write("Sugestão de causa adicional: Visibilidade ou atenção inadequada ao obstáculo na estrada")
+
     
     st.subheader("Token Count Information:")
     st.write(f"Input text tokens: {input_token_count}")

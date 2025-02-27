@@ -28,6 +28,7 @@ def classify_accident(text: str) -> dict:
         "Lack of attention to pedestrians and cyclists",
         "Driver health issues",
         "Pedestrian inattention",
+        "Visibility or inadequate attention to the obstacle on the road",
         "Others"
     ]
     

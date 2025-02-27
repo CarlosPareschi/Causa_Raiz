@@ -72,7 +72,8 @@ def agent3_classify(text: str) -> dict:
         "Provide your step-by-step reasoning, the selected cause, and the confidence score in the following format:\n"
         "Step-by-step reasoning: ...\n"
         "Selected Cause: ...\n"
-        "Score: ..."
+        "Score: ...\n\n"
+        "Please provide your answer in Brazilian Portuguese."
     )
     
     messages = [
