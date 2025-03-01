@@ -8,60 +8,59 @@ from agents.agent4_translate import agent4_translate
 from agents.agent5_suggest import agent5_suggest_cause
 from utils.token_count import get_token_count
 
-import pickle
-from pathlib import Path
 import streamlit_authenticator as stauth
 
-# --- Autenticação ---
-# Carrega os hashes previamente gerados
-file_path = Path(__file__).parent / "hashed_pw.pkl"
-with file_path.open("rb") as file:
-    hashed_credentials = pickle.load(file)
+# Carrega as senhas do secrets.toml
+usernames = ["Cecilia", "Charles"]
+names = ["Cecilia", "Charles"]
+hashed_passwords = [st.secrets["passwords"]["Cecilia"], st.secrets["passwords"]["Charles"]]
 
+# Configura as credenciais
 credentials = {
-    "usernames": {
-        "Cecilia": {
-            "name": "Cecilia",
-            "password": hashed_credentials["Cecilia"],
-            "email": "jsmith@gmail.com"
-        },
-        "Charles": {
-            "name": "Charles",
-            "password": hashed_credentials["Charles"],
-            "email": "rbriggs@gmail.com"
-        }
-    }
+    "usernames": {}
 }
 
-# Create the authenticator object correctly
+for i in range(len(names)):
+    credentials["usernames"][usernames[i]] = {
+        "name": names[i],
+        "password": hashed_passwords[i]
+    }
+
+# Cria o autenticador
 authenticator = stauth.Authenticate(
     credentials,
-    "your_app_name",  # Use a unique name for your app
-    "your_signature_key",  # Use a random secure key
-    cookie_expiry_days=30,
-    preauthorized=None  # Disable pre-authorization
+    st.secrets["cookie"]["name"],
+    st.secrets["cookie"]["key"],
+    cookie_expiry_days=st.secrets["cookie"]["expiry_days"]
 )
 
-# Correct way to call the login method
-try:
-    name, authentication_status, username = authenticator.login("Login")
-    # Note: no additional location parameter
-except Exception as e:
-    st.error(f"Authentication error: {e}")
+# Mostra a tela de login
+# Adicione um nome para o formulário de login
+name, authentication_status, username = authenticator.login("Login", "main")
 
-# Then check the authentication status
+# Verifica o status de autenticação
 if authentication_status is None:
     st.warning("Por favor, faça login para continuar")
 elif authentication_status is False:
     st.error("Usuário ou senha incorretos")
 elif authentication_status:
-    st.success(f"Bem-vindo, {name}!")
-    # Rest of your code...
+    # Layout com duas colunas para mostrar o nome do usuário e botão de logout
+    col1, col2 = st.columns([3, 1])
     
-    # Botão de logout
-    if st.sidebar.button("Logout"):
-        authenticator.logout(location="main")
-    st.sidebar.title(f"Olá, {name}!")
+    with col1:
+        st.success(f"Bem-vindo, {name}!")
+    
+    with col2:
+        # Botão de logout no canto direito
+        try:
+            authenticator.logout("Logout", "main")
+        except KeyError:
+            st.warning("Cookie não encontrado. Talvez o usuário não esteja logado ou o cookie já expirou.")
+
+
+
+
+
     
     st.title("Análise de Causa Raiz da Descrição de Acidentes de Trânsito")
     
