@@ -5,3 +5,4 @@ scikit-learn
 python-dotenv
 tiktoken
 numpy
+streamlit-authenticator==0.2.1
