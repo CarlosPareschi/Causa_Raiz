@@ -11,3 +11,5 @@ wheels/
 .env
 # Meus comentarios
 Comentarios.txt
+
+.streamlit/

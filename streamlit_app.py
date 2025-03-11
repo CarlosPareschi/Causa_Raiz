@@ -16,10 +16,7 @@ names = ["Cecilia", "Charles"]
 hashed_passwords = [st.secrets["passwords"]["Cecilia"], st.secrets["passwords"]["Charles"]]
 
 # Configura as credenciais
-credentials = {
-    "usernames": {}
-}
-
+credentials = {"usernames": {}}
 for i in range(len(names)):
     credentials["usernames"][usernames[i]] = {
         "name": names[i],
@@ -34,46 +31,33 @@ authenticator = stauth.Authenticate(
     cookie_expiry_days=st.secrets["cookie"]["expiry_days"]
 )
 
-# Mostra a tela de login
-# Adicione um nome para o formulário de login
+# Renderiza a tela de login
 name, authentication_status, username = authenticator.login("Login", "main")
 
-# Verifica o status de autenticação
-if authentication_status is None:
-    st.warning("Por favor, faça login para continuar")
-elif authentication_status is False:
-    st.error("Usuário ou senha incorretos")
-elif authentication_status:
-    # Layout com duas colunas para mostrar o nome do usuário e botão de logout
-    col1, col2 = st.columns([3, 1])
-    
-    with col1:
-        st.success(f"Bem-vindo, {name}!")
-    
-    with col2:
-        # Botão de logout no canto direito
-        try:
-            authenticator.logout("Logout", "main")
-        except KeyError:
-            st.warning("Cookie não encontrado. Talvez o usuário não esteja logado ou o cookie já expirou.")
+if authentication_status:
+    # Exibe informações do usuário e coloca o botão de logout na sidebar
+    st.sidebar.success(f"Bem-vindo, {name}!")
+    # O método logout renderiza seu próprio botão
+    if authenticator.logout("Logout", "sidebar"):
+        # Após o logout, limpe o estado que desejar e interrompa a execução para forçar a re-renderização
+        if "input_text" in st.session_state:
+            del st.session_state["input_text"]
+        st.stop()
 
-
-
-
-
-    
     st.title("Análise de Causa Raiz da Descrição de Acidentes de Trânsito")
     
     # Botão para limpar os dados da sessão
-    if st.button("Clear Data"):
-        st.session_state.clear()
+    if st.button("Clear Data", key="clear_data_btn"):
+        st.session_state.input_text = ""
 
+    
+    # Inicializa a variável se não existir
     if "input_text" not in st.session_state:
         st.session_state.input_text = ""
         
     st.session_state.input_text = st.text_area("Enter the accident description:", st.session_state.input_text)
     
-    if st.button("Process"):
+    if st.button("Process", key="process_btn"):
         if not agent0_validate(st.session_state.input_text):
             st.error("Isso não é uma descrição de acidente, favor redigir novamente o texto.")
         else:
@@ -116,3 +100,8 @@ elif authentication_status:
             st.write(f"Improved text tokens: {improved_token_count}")
             st.write(f"Reasoning output tokens: {reasoning_token_count}")
             st.write(f"Total tokens processed: {total_tokens}")
+
+elif authentication_status is False:
+    st.error("Usuário ou senha incorretos")
+else:
+    st.warning("Por favor, faça login para continuar")

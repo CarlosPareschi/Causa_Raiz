@@ -7,7 +7,7 @@ openai.api_key = OPENAI_API_KEY
 def agent0_validate(text: str) -> bool:
     """
     Valida se o texto fornecido é uma descrição de acidente de trânsito.
-    Retorna True se for uma descrição válida, caso contrário, False.
+    Retorna yes se for uma descrição válida, caso contrário, no.
     """
     system_message = (
         "You are an assistant specialized in validating traffic accident descriptions. "
@@ -25,10 +25,10 @@ def agent0_validate(text: str) -> bool:
     ]
     
     response = openai.ChatCompletion.create(
-        model="gpt-4o",  # ou o modelo que preferir
+        model="o3-mini",  # ou o modelo que preferir
         messages=messages,
-        temperature=0.0,
-        max_tokens=10
+        reasoning_effort="medium",
+        max_completion_tokens=10000
     )
     
     result = response["choices"][0]["message"]["content"].strip().upper()
