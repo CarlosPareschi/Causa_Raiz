@@ -35,32 +35,39 @@ authenticator = stauth.Authenticate(
 name, authentication_status, username = authenticator.login("Login", "main")
 
 if authentication_status:
-    # Exibe informações do usuário e coloca o botão de logout na sidebar
-    st.sidebar.success(f"Bem-vindo, {name}!")
-    # O método logout renderiza seu próprio botão
+    # Renderiza o botão de logout na sidebar (o método logout já renderiza seu botão)
     if authenticator.logout("Logout", "sidebar"):
-        # Após o logout, limpe o estado que desejar e interrompa a execução para forçar a re-renderização
         if "input_text" in st.session_state:
             del st.session_state["input_text"]
         st.stop()
 
     st.title("Análise de Causa Raiz da Descrição de Acidentes de Trânsito")
     
-    # Botão para limpar os dados da sessão
-    if st.button("Clear Data", key="clear_data_btn"):
-        st.session_state.input_text = ""
-
-    
-    # Inicializa a variável se não existir
+    # Inicializa a variável de input e o contador de limpeza, se não existirem
     if "input_text" not in st.session_state:
         st.session_state.input_text = ""
-        
-    st.session_state.input_text = st.text_area("Enter the accident description:", st.session_state.input_text)
+    if "clear_counter" not in st.session_state:
+        st.session_state.clear_counter = 0
+
+    # Função callback para limpar o conteúdo e incrementar o contador
+    def clear_data_callback():
+        st.session_state.input_text = ""
+        st.session_state.clear_counter += 1
+
+    # Botão para limpar o conteúdo do campo de texto usando on_click
+    st.button("Clear Data", key="clear_data_btn", on_click=clear_data_callback)
+    
+    # Exibe o text_area utilizando o valor da sessão e uma chave que depende do clear_counter
+    input_text = st.text_area("Enter the accident description:",
+                              value=st.session_state.input_text,
+                              key=f"input_text_{st.session_state.clear_counter}")
+    st.session_state.input_text = input_text  # Atualiza a sessão com o valor digitado
     
     if st.button("Process", key="process_btn"):
         if not agent0_validate(st.session_state.input_text):
             st.error("Isso não é uma descrição de acidente, favor redigir novamente o texto.")
         else:
+            # Processamento dos textos
             translated_text = agent1_translate(st.session_state.input_text)
             improved_text = agent2_improve(translated_text)
             classification_result = agent3_classify(improved_text)
@@ -76,11 +83,29 @@ if authentication_status:
                 score = score_match.group(1).strip()
 
             translated_cause = agent4_translate(selected_cause)
+            
+            # Cálculo dos tokens para cada categoria
             input_token_count = get_token_count(st.session_state.input_text)
-            improved_token_count = get_token_count(improved_text)
-            reasoning_token_count = get_token_count(reasoning_text)
-            total_tokens = input_token_count + improved_token_count + reasoning_token_count
-
+            cached_input_token_count = get_token_count(improved_text)
+            output_token_count = get_token_count(reasoning_text)
+            
+            # Exibe as contagens de tokens
+            st.write(f"Input text tokens: {input_token_count}")
+            st.write(f"Cached input tokens (improved text): {cached_input_token_count}")
+            st.write(f"Output tokens (reasoning output): {output_token_count}")
+            
+            # Calcula o custo em dólares para cada categoria (por milhão de tokens)
+            cost_input = input_token_count / 1_000_000 * 1.10
+            cost_cached_input = cached_input_token_count / 1_000_000 * 0.55
+            cost_output = output_token_count / 1_000_000 * 4.40
+            total_cost = cost_input + cost_cached_input + cost_output
+            
+            st.subheader("Token Cost Information:")
+            st.write(f"Input tokens cost: ${cost_input:.6f}")
+            st.write(f"Cached input tokens cost: ${cost_cached_input:.6f}")
+            st.write(f"Output tokens cost: ${cost_output:.6f}")
+            st.write(f"Total cost: ${total_cost:.6f}")
+            
             st.subheader("Full Model Reasoning:")
             st.text_area("Reasoning Output:", reasoning_text, height=300)
 
@@ -94,14 +119,8 @@ if authentication_status:
                 with tabs[0]:
                     st.write(f"Nova Causa Sugerida: {suggested_cause}")
                     st.write(f"Confidence Score: {score}")
-
-            st.subheader("Token Count Information:")
-            st.write(f"Input text tokens: {input_token_count}")
-            st.write(f"Improved text tokens: {improved_token_count}")
-            st.write(f"Reasoning output tokens: {reasoning_token_count}")
-            st.write(f"Total tokens processed: {total_tokens}")
-
-elif authentication_status is False:
-    st.error("Usuário ou senha incorretos")
 else:
-    st.warning("Por favor, faça login para continuar")
+    if authentication_status is False:
+        st.error("Usuário ou senha incorretos")
+    else:
+        st.warning("Por favor, faça login para continuar")

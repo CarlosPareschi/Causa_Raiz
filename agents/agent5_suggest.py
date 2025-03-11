@@ -21,10 +21,10 @@ def agent5_suggest_cause(text: str) -> str:
     ]
     
     response = openai.ChatCompletion.create(
-        model="gpt-4o",  # ou outro modelo de sua escolha
+        model="o3-mini",  # ou o modelo que preferir
         messages=messages,
-        temperature=0.3,
-        max_tokens=100
+        reasoning_effort="medium",
+        max_completion_tokens=10000
     )
     
     result = response["choices"][0]["message"]["content"]

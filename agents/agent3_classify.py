@@ -83,10 +83,10 @@ def agent3_classify(text: str) -> dict:
     ]
     
     response = openai.ChatCompletion.create(
-        model="gpt-4o",  
+        model="o3-mini",  # ou o modelo que preferir
         messages=messages,
-        temperature=0.3,
-        max_tokens=300
+        reasoning_effort="medium",
+        max_completion_tokens=10000
     )
     
     result = response["choices"][0]["message"]["content"]
